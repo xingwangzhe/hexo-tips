@@ -1,9 +1,11 @@
+[English](README_EN.md)
 # hexo-tips
 更便捷地使用小贴士
 
-[English](README_EN.md)
+使用
+>npm i hexo-tips
 
-## 版本说明
+## 提交版本说明
 提交信息格式将决定版本号的更新方式：
 - 主版本号(major): 包含 "BREAKING CHANGE" 或 "!" 的提交
 - 次版本号(minor): 以 "feat:" 或 "feature:" 开头的提交

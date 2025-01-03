@@ -1,7 +1,9 @@
+[中文](README.md)
 # hexo-tips
 A more convenient way to use tips in Hexo
 
-[中文](README.md)
+Install
+>npm i hexo-tips
 
 ## Version Control
 Commit message format determines how version numbers are updated:
