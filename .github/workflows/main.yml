@@ -3,12 +3,12 @@ name: Auto Publish to NPM
 on:
   push:
     branches: 
-      - main    # 只在 main 分支上触发
+      - main
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'  # 双重检查确保是 main 分支
+    if: github.ref == 'refs/heads/main'
     permissions:
       contents: write
       packages: write
@@ -17,6 +17,12 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Git Configuration
+        run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Actions[bot]"
           
       - uses: actions/setup-node@v3
         with:
@@ -29,19 +35,27 @@ jobs:
       - name: Get commit message
         id: commit
         run: |
-          echo "message=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
+          # 获取最后一次提交信息并处理多行信息
+          FULL_MSG=$(git log -1 --pretty=format:"%B")
+          echo "message<<EOF" >> $GITHUB_OUTPUT
+          echo "$FULL_MSG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
           
       - name: Determine version bump
         id: version
-        if: github.ref == 'refs/heads/main'  # 确保版本更新只在 main 分支执行
+        if: github.ref == 'refs/heads/main'
         run: |
           MESSAGE="${{ steps.commit.outputs.message }}"
-          if [[ $MESSAGE == *"BREAKING CHANGE"* ]] || [[ $MESSAGE == *"!"* ]]; then
+          # 检查提交信息中的关键字
+          if [[ $MESSAGE =~ "BREAKING CHANGE:" ]] || [[ $MESSAGE =~ "!" ]]; then
             echo "type=major" >> $GITHUB_OUTPUT
-          elif [[ $MESSAGE == *"feat:"* ]] || [[ $MESSAGE == *"feature:"* ]]; then
+            echo "Found major change trigger in commit message"
+          elif [[ $MESSAGE =~ ^feat:.*$ ]] || [[ $MESSAGE =~ ^feature:.*$ ]]; then
             echo "type=minor" >> $GITHUB_OUTPUT
+            echo "Found minor change trigger in commit message"
           else
             echo "type=patch" >> $GITHUB_OUTPUT
+            echo "Default to patch version"
           fi
           
       - name: Automated Version Bump
@@ -50,6 +64,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           version-type: ${{ steps.version.outputs.type }}
+          commit-message: 'CI: bumps version to {{version}} [skip ci]'
           
       - name: Publish to NPM
         run: npm publish --access public
