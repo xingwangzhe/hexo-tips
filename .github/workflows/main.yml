@@ -1,0 +1,57 @@
+name: Auto Publish to NPM
+
+on:
+  push:
+    branches: 
+      - main    # 只在 main 分支上触发
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'  # 双重检查确保是 main 分支
+    permissions:
+      contents: write
+      packages: write
+    
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          registry-url: https://registry.npmjs.org/
+          
+      - name: Install dependencies
+        run: npm ci || npm install
+          
+      - name: Get commit message
+        id: commit
+        run: |
+          echo "message=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
+          
+      - name: Determine version bump
+        id: version
+        if: github.ref == 'refs/heads/main'  # 确保版本更新只在 main 分支执行
+        run: |
+          MESSAGE="${{ steps.commit.outputs.message }}"
+          if [[ $MESSAGE == *"BREAKING CHANGE"* ]] || [[ $MESSAGE == *"!"* ]]; then
+            echo "type=major" >> $GITHUB_OUTPUT
+          elif [[ $MESSAGE == *"feat:"* ]] || [[ $MESSAGE == *"feature:"* ]]; then
+            echo "type=minor" >> $GITHUB_OUTPUT
+          else
+            echo "type=patch" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Automated Version Bump
+        uses: 'phips28/gh-action-bump-version@master'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          version-type: ${{ steps.version.outputs.type }}
+          
+      - name: Publish to NPM
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
