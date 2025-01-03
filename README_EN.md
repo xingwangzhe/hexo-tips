@@ -3,6 +3,7 @@
 A more convenient way to use tips in Hexo
 
 Install
+
 >npm i hexo-tips
 
 ## Version Control
