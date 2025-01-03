@@ -17,8 +17,7 @@ Examples:
 - `fix: fix bug` -> patch version bump (1.1.0 → 1.1.1)
 - `BREAKING CHANGE: refactor API` -> major version bump (1.1.1 → 2.0.0)
 - `feat!: incompatible new feature` -> major version bump (2.0.0 → 3.0.0)
-- `docs: update documentation` -> patch version bump (3.0.0 → 3.0.1)
-- `style: adjust styles` -> patch version bump (3.0.1 → 3.0.2)
+
 
 ## Usage
 
