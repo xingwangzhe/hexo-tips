@@ -19,8 +19,8 @@
     align-items: center;
     justify-content: center;
     margin-right: 1rem;
-    font-size: clamp(2em, 2vw, 3em); /* 在h3到h2之间动态调整 */
-    min-width: 2rem;  /* 调整最小宽度以适应更大的图标 */
+    font-size: clamp(2em, 2vw, 3em);
+    min-width: 2rem;
     transition: transform 0.3s ease;
 }
 
@@ -38,135 +38,6 @@
 
 .hexo-tips-layout:hover .content {
     transform: translateX(3px);
-}
-
-/* 视觉样式 */
-div.hexo-tips-warning {
-    background-color: #fff8e6;
-    border-color: #ffb100;
-}
-
-div.hexo-tips-danger {
-    background-color: #ffeded;
-    border-color: #ff4545;
-}
-
-div.hexo-tips-tip {
-    background-color: #e6f4ff;
-    border-color: #409eff;
-}
-
-div.hexo-tips-mention {
-    background-color: #f3e6ff;
-    border-color: #b45fff;
-}
-
-div.hexo-tips-recommend {
-    background-color: #e6ffe6;
-    border-color: #67c23a;
-}
-
-div.hexo-tips-note {
-    background-color: #f5f5f5;
-    border-color: #9e9e9e;
-}
-
-div.hexo-tips-info {
-    background-color: #e3f2fd;
-    border-color: #03a9f4;
-}
-
-div.hexo-tips-success {
-    background-color: #e8f5e9;
-    border-color: #4caf50;
-}
-
-div.hexo-tips-error {
-    background-color: #ffebee;
-    border-color: #f44336;
-}
-
-div.hexo-tips-bug {
-    background-color: #fce4ec;
-    border-color: #e91e63;
-}
-
-div.hexo-tips-todo {
-    background-color: #f3e5f5;
-    border-color: #9c27b0;
-}
-
-div.hexo-tips-example {
-    background-color: #fff3e0;
-    border-color: #ff9800;
-}
-
-div.hexo-tips-quote {
-    background-color: #eceff1;
-    border-color: #607d8b;
-}
-
-div.hexo-tips-link {
-    background-color: #e8eaf6;
-    border-color: #3f51b5;
-}
-
-div.hexo-tips-code {
-    background-color: #fafafa;
-    border-color: #616161;
-}
-
-div.hexo-tips-update {
-    background-color: #e0f2f1;
-    border-color: #009688;
-}
-
-div.hexo-tips-star {
-    background-color: #fffde7;
-    border-color: #ffd700;
-}
-
-div.hexo-tips-time {
-    background-color: #efebe9;
-    border-color: #795548;
-}
-
-/* 图标颜色样式 */
-.hexo-tips-warning .icon { color: #ffb100; }
-.hexo-tips-danger .icon { color: #ff4545; }
-.hexo-tips-tip .icon { color: #409eff; }
-.hexo-tips-mention .icon { color: #b45fff; }
-.hexo-tips-recommend .icon { color: #67c23a; }
-.hexo-tips-note .icon { color: #9e9e9e; }
-.hexo-tips-info .icon { color: #03a9f4; }
-.hexo-tips-success .icon { color: #4caf50; }
-.hexo-tips-error .icon { color: #f44336; }
-.hexo-tips-bug .icon { color: #e91e63; }
-.hexo-tips-todo .icon { color: #9c27b0; }
-.hexo-tips-example .icon { color: #ff9800; }
-.hexo-tips-quote .icon { color: #607d8b; }
-.hexo-tips-link .icon { color: #3f51b5; }
-.hexo-tips-code .icon { color: #616161; }
-.hexo-tips-update .icon { color: #009688; }
-.hexo-tips-star .icon { color: #ffd700; }
-.hexo-tips-time .icon { color: #795548; }
-
-/* 暗色模式 */
-@media (prefers-color-scheme: dark) {
-    .hexo-tips-layout {
-        background: rgba(30, 30, 30, 0.8);
-    }
-    .hexo-tips-layout .icon {
-        opacity: 0.9;
-    }
-}
-
-html.dark .hexo-tips-layout {
-    background: rgba(30, 30, 30, 0.8);
-}
-
-html.dark .hexo-tips-layout .icon {
-    opacity: 0.9;
 }
 
 /* 响应式调整 */
