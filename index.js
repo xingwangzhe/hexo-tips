@@ -41,37 +41,13 @@ hexo.extend.filter.register('after_render:html', str => {
                 const processedContent = hexo.render.renderSync({ text: content, engine: 'markdown' });
                 const tipConfig = hexoTipsConfig[type];
                 const icon = tipConfig.icon;
-                const style = tipConfig.style || {};
                 
-                // 构建样式优先级链
-                const themeStyles = `
-                    /* 1. 手动暗色模式优先 */
-                    html.dark .hexo-tips-${type} {
-                        background-color: ${style.dark?.background};
-                    }
-                    /* 2. 系统暗色模式其次 */
-                    @media (prefers-color-scheme: dark) {
-                        html:not(.light) .hexo-tips-${type} {
-                            background-color: ${style.dark?.background};
-                        }
-                    }
-                    /* 3. 亮色模式最后 */
-                    html:not(.dark) .hexo-tips-${type},
-                    html.light .hexo-tips-${type} {
-                        background-color: ${style.light?.background};
-                    }
-                `;
-
-                // 基础样式(不变的部分)
-                const baseStyle = `
-                    border-color: ${style.border};
-                    color: inherit;
-                `;
-
+                // 生成带有样式配置的类名
+                const styleClass = `tips-style-${type}`;
+                
                 return `
-                    <style>${themeStyles}</style>
-                    <div class="hexo-tips-layout hexo-tips-${type}" style="${baseStyle}">
-                        <div class="icon" style="color: ${style.border}">${icon}</div>
+                    <div class="hexo-tips-layout hexo-tips-${type} ${styleClass}">
+                        <div class="icon">${icon}</div>
                         <div class="content">${processedContent}</div>
                     </div>
                 `;
@@ -81,12 +57,27 @@ hexo.extend.filter.register('after_render:html', str => {
     return str;
 });
 
-// 注入基础布局CSS样式
+// 注入基础布局CSS样式和动态生成的样式规则
 hexo.extend.injector.register('head_end', () => {
     const path = require('path');
     const fs = require('fs');
     const cssPath = path.join(__dirname, 'hexo-tips.css');
-    const cssContent = fs.readFileSync(cssPath, 'utf8');
+    let cssContent = fs.readFileSync(cssPath, 'utf8');
+
+    // 动态生成样式规则
+    Object.keys(hexoTipsConfig).forEach(type => {
+        const style = hexoTipsConfig[type].style || {};
+        const styleClass = `tips-style-${type}`;
+        const styleRules = `
+            .${styleClass} {
+                --tips-light-bg: ${style.light?.background || '#fff'};
+                --tips-dark-bg: ${style.dark?.background || '#333'};
+                --tips-border: ${style.border || '#000'};
+            }
+        `;
+        cssContent += styleRules;
+    });
+
     return `<style>${cssContent}</style>`;
 }, 'post');
 
