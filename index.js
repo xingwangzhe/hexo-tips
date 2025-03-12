@@ -104,6 +104,6 @@ hexo.extend.injector.register('head_end', () => {
     });
 
     return `<style>${cssContent}</style>`;
-}, 'post');
+},);
 
 
