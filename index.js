@@ -33,11 +33,32 @@ hexo.extend.filter.register('before_post_render', data => {
 
 hexo.extend.filter.register('after_render:html', str => {
     if (!str.includes(':::')) return str;
-
+    
+    // 首先查找 body 内容
+    const bodyMatch = /<body[^>]*>([\s\S]*?)<\/body>/i.exec(str);
+    if (!bodyMatch) return str; // 未找到 body 标签
+    
+    const bodyContent = bodyMatch[0];
+    const bodyStartIndex = str.indexOf(bodyContent);
+    const bodyEndIndex = bodyStartIndex + bodyContent.length;
+    
+    // 只有当 body 包含特定模式时才处理
+    if (!bodyContent.includes(':::')) return str;
+    
+    let processed = str;
+    
     Object.keys(hexoTipsConfig).forEach(type => {
         const regex = new RegExp(`:::\\s*${type}([\\s\\S]*?):::`, 'g');
-        if (regex.test(str)) {
-            str = str.replace(regex, (_, content) => {
+        
+        // 只处理 body 内容
+        if (regex.test(bodyContent)) {
+            // 将文档分割成各个部分
+            const beforeBody = str.substring(0, bodyStartIndex);
+            let newBodyContent = bodyContent;
+            const afterBody = str.substring(bodyEndIndex);
+            
+            // 仅在 body 中替换模式
+            newBodyContent = newBodyContent.replace(regex, (_, content) => {
                 const processedContent = hexo.render.renderSync({ text: content, engine: 'markdown' });
                 const tipConfig = hexoTipsConfig[type];
                 const icon = tipConfig.icon;
@@ -52,10 +73,14 @@ hexo.extend.filter.register('after_render:html', str => {
                     </div>
                 `;
             });
+            
+            // 重构文档
+            processed = beforeBody + newBodyContent + afterBody;
         }
     });
-    return str;
-});
+    
+    return processed;
+}, 999);
 
 // 注入基础布局CSS样式和动态生成的样式规则
 hexo.extend.injector.register('head_end', () => {
