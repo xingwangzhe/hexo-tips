@@ -31,56 +31,98 @@ hexo.extend.filter.register('before_post_render', data => {
     data.hexo_tips = hasTipsContent;
 });
 
-hexo.extend.filter.register('after_render:html', str => {
+// 在页面生成阶段为不同类型的页面添加标记
+hexo.extend.filter.register('template_locals', locals => {
+    if (!locals.page) return locals;
+    
+    // 标记页面类型
+    if (locals.is_post) {
+        locals.page.is_post_page = true;
+    } else if (locals.is_home) {
+        locals.page.is_home_page = true;
+    } else if (locals.is_archive) {
+        locals.page.is_archive_page = true;
+    } else if (locals.is_category) {
+        locals.page.is_category_page = true;
+    } else if (locals.is_tag) {
+        locals.page.is_tag_page = true;
+    } else {
+        locals.page.is_other_page = true;
+    }
+    
+    return locals;
+});
+
+hexo.extend.filter.register('after_render:html', function(str, data) {
     if (!str.includes(':::')) return str;
     
-    // 首先查找 body 内容
-    const bodyMatch = /<body[^>]*>([\s\S]*?)<\/body>/i.exec(str);
-    if (!bodyMatch) return str; // 未找到 body 标签
-    
-    const bodyContent = bodyMatch[0];
-    const bodyStartIndex = str.indexOf(bodyContent);
-    const bodyEndIndex = bodyStartIndex + bodyContent.length;
-    
-    // 只有当 body 包含特定模式时才处理
-    if (!bodyContent.includes(':::')) return str;
-    
     let processed = str;
+    let isPostPage = false;
+    
+    // 检查页面类型，优先使用data参数
+    if (data && data.page) {
+        isPostPage = data.page.is_post || data.page.is_post_page;
+    } else {
+        // 如果没有data参数，尝试从HTML中查找注入的标记
+        isPostPage = str.includes('data-page-type="post"') || 
+                     /<body[^>]*class="[^"]*post[^"]*"/.test(str);
+    }
     
     Object.keys(hexoTipsConfig).forEach(type => {
-        const regex = new RegExp(`:::\\s*${type}([\\s\\S]*?):::`, 'g');
+        const regex = new RegExp(`:::\\s*${type}\\s*([\\s\\S]*?)\\s*:::`, 'g');
         
-        // 只处理 body 内容
-        if (regex.test(bodyContent)) {
-            // 将文档分割成各个部分
-            const beforeBody = str.substring(0, bodyStartIndex);
-            let newBodyContent = bodyContent;
-            const afterBody = str.substring(bodyEndIndex);
-            
-            // 仅在 body 中替换模式
-            newBodyContent = newBodyContent.replace(regex, (_, content) => {
-                const processedContent = hexo.render.renderSync({ text: content, engine: 'markdown' });
-                const tipConfig = hexoTipsConfig[type];
-                const icon = tipConfig.icon;
+        if (isPostPage) {
+            // 对于文章页面，在body标签内搜索并替换
+            const bodyMatch = /<body[^>]*>([\s\S]*?)<\/body>/i.exec(str);
+            if (bodyMatch && bodyMatch[1].includes(`:::${type}`)) {
+                const bodyContent = bodyMatch[0];
+                const bodyStartIndex = processed.indexOf(bodyContent);
+                const bodyEndIndex = bodyStartIndex + bodyContent.length;
                 
-                // 生成带有样式配置的类名
-                const styleClass = `tips-style-${type}`;
+                const beforeBody = processed.substring(0, bodyStartIndex);
+                let newBodyContent = bodyContent;
+                const afterBody = processed.substring(bodyEndIndex);
                 
-                return `
-                    <div class="hexo-tips-layout hexo-tips-${type} ${styleClass}">
-                        <div class="icon">${icon}</div>
-                        <div class="content">${processedContent}</div>
-                    </div>
-                `;
-            });
-            
-            // 重构文档
-            processed = beforeBody + newBodyContent + afterBody;
+                newBodyContent = newBodyContent.replace(regex, (_, content) => {
+                    const processedContent = hexo.render.renderSync({ text: content.trim(), engine: 'markdown' });
+                    const tipConfig = hexoTipsConfig[type];
+                    const icon = tipConfig.icon || '';
+                    
+                    const styleClass = `tips-style-${type}`;
+                    
+                    return `
+                        <div class="hexo-tips-layout hexo-tips-${type} ${styleClass}">
+                            <div class="icon">${icon}</div>
+                            <div class="content">${processedContent}</div>
+                        </div>
+                    `;
+                });
+                
+                processed = beforeBody + newBodyContent + afterBody;
+            }
+        } else {
+            // 非文章页面直接在整个HTML中替换
+            if (regex.test(processed)) {
+                processed = processed.replace(regex, (_, content) => {
+                    const processedContent = hexo.render.renderSync({ text: content.trim(), engine: 'markdown' });
+                    const tipConfig = hexoTipsConfig[type];
+                    const icon = tipConfig.icon || '';
+                    
+                    const styleClass = `tips-style-${type}`;
+                    
+                    return `
+                        <div class="hexo-tips-layout hexo-tips-${type} ${styleClass}">
+                            <div class="icon">${icon}</div>
+                            <div class="content">${processedContent}</div>
+                        </div>
+                    `;
+                });
+            }
         }
     });
     
     return processed;
-}, 999);
+}, 1); // 调整优先级为10，确保在meta标签渲染之后执行
 
 // 注入基础布局CSS样式和动态生成的样式规则
 hexo.extend.injector.register('head_end', () => {
