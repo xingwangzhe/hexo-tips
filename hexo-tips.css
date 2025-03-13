@@ -8,6 +8,12 @@
     display: flex;
     align-items: center;
     transition: transform 0.3s ease;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    max-height: 80vh;
+    overflow-y: auto;
+    overflow-x: auto;
 }
 
 .hexo-tips-layout:hover {
