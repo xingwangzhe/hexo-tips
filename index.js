@@ -27,29 +27,29 @@ hexo.extend.filter.register('before_post_render', data => {
     tipsCache.set(data.source, hasTipsContent);
     data.hexo_tips = hasTipsContent;
     
-    if (hasTipsContent) {
-        // 为摘要和描述生成纯文本版本 - 移除提示框语法但保留内容
-        let cleanText = data.content;
-        Object.keys(hexoTipsConfig).forEach(type => {
-            const regex = new RegExp(`:::\\s*${type}([\\s\\S]*?):::`, 'g');
-            cleanText = cleanText.replace(regex, '$1');
-        });
+    // if (hasTipsContent) {
+    //     // 为摘要和描述生成纯文本版本 - 移除提示框语法但保留内容
+    //     let cleanText = data.content;
+    //     Object.keys(hexoTipsConfig).forEach(type => {
+    //         const regex = new RegExp(`:::\\s*${type}([\\s\\S]*?):::`, 'g');
+    //         cleanText = cleanText.replace(regex, '$1');
+    //     });
         
-        // 设置临时变量用于摘要和描述生成
-        data._cleanContent = cleanText;
+    //     // 设置临时变量用于摘要和描述生成
+    //     data._cleanContent = cleanText;
         
-        // 修改description生成机制
-        if (!data.description) {
-            data.description = cleanText.substring(0, 200).trim();
-        }
+    //     // 修改description生成机制
+    //     if (!data.description) {
+    //         data.description = cleanText.substring(0, 200).trim();
+    //     }
         
-        // 修改excerpt生成机制
-        const config = hexo.config;
-        if (!data.excerpt) {
-            const excerptLength = config.excerpt_length || 200;
-            data.excerpt = cleanText.substring(0, excerptLength).trim();
-        }
-    }
+    //     // 修改excerpt生成机制
+    //     const config = hexo.config;
+    //     if (!data.excerpt) {
+    //         const excerptLength = config.excerpt_length || 200;
+    //         data.excerpt = cleanText.substring(0, excerptLength).trim();
+    //     }
+    // }
     
     return data;
 }, -10000); // 最高优先级
