@@ -1,18 +1,42 @@
 {
   "name": "hexo-tips",
-  "version": "1.4.0",
-  "main": "index.js",
+  "version": "1.4.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "description": "A powerful Hexo plugin for creating various types of tooltips and notices with multiple icons",
   "scripts": {
-    "test": ""
+    "build": "tsc",
+    "build:bun": "bun run tsc",
+    "dev": "tsc --watch",
+    "dev:bun": "bun run tsc --watch",
+    "test": "echo \"Tests will be added in future versions\"",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
+    "prepare": "./scripts/prepare-release.sh",
+    "lint": "echo \"Linting will be added in future versions\"",
+    "prepublishOnly": "npm run clean && npm run build"
   },
   "keywords": [
     "hexo",
     "tips",
     "markdown",
     "notice",
-    "alert"
+    "alert",
+    "typescript"
   ],
   "author": "xingwangzhe",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^24.6.2",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "hexo": ">=5.0.0"
+  },
+  "files": [
+    "dist",
+    "hexo-tips.css",
+    "README.md",
+    "README_EN.md"
+  ]
 }
