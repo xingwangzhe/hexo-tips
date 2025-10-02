@@ -1,0 +1,43 @@
+# Source files
+src/
+*.ts
+!dist/**/*.d.ts
+
+# Development files
+tsconfig.json
+.gitignore
+bun.lockb
+package-lock.json
+yarn.lock
+
+# IDE
+.vscode/
+.idea/
+
+# Tests
+test/
+tests/
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+
+# Documentation development
+docs/
+examples/
+
+# Build tools
+.github/
+scripts/
+
+# Logs
+*.log
+
+# Cache
+.cache/
+.nyc_output
+coverage/
+
+# Temporary
+tmp/
+temp/
