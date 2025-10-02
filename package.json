@@ -12,9 +12,8 @@
     "test": "echo \"Tests will be added in future versions\"",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "prepare": "./scripts/prepare-release.sh",
     "lint": "echo \"Linting will be added in future versions\"",
-    "prepublishOnly": "npm run clean && npm run build"
+    "prepublishOnly": "bun run clean && bun run build"
   },
   "keywords": [
     "hexo",
