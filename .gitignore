@@ -12,6 +12,11 @@ lib/
 # TypeScript cache
 *.d.ts.map
 
+# Legacy JavaScript files (project is now TypeScript-only)
+index.js
+*.js
+!dist/**/*.js
+
 # IDE
 .vscode/
 .idea/

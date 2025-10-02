@@ -3,6 +3,9 @@ src/
 *.ts
 !dist/**/*.d.ts
 
+# Legacy JavaScript files (project is TypeScript-only)
+index.js
+
 # Development files
 tsconfig.json
 .gitignore

@@ -1,6 +1,6 @@
 {
   "name": "hexo-tips",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "description": "A powerful Hexo plugin for creating various types of tooltips and notices with multiple icons",
